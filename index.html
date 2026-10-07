@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>One-Time Payment</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="payment-container">
+  <form id="payment-form">
+   <h1>Payment for Premium</h1>
+    <h2>One-Time Payment</h2>
+
+    <label for="name">Full Name</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="card-number">Card Number</label>
+    <input type="text" id="card-number" name="card-number" maxlength="19" placeholder="1234 5678 9012 3456" required>
+
+    <div class="row">
+      <div class="column">
+        <label for="expiry">Expiry Date</label>
+        <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+      </div>
+
+      <div class="column">
+        <label for="cvv">CVV</label>
+        <input type="password" id="cvv" name="cvv" maxlength="4" required>
+      </div>
+    </div>
+
+    <label for="amount">Amount (USD)</label>
+    <input type="number" id="amount" name="amount" required min="1" step="0.01">
+
+    <button type="submit">Pay Now</button>
+  </form>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

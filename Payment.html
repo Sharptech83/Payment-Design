@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>Premium One-Time Payment</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border: #cbd5e1;
+      --danger: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px 16px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #dbeafe 0, var(--bg) 48%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .payment-container {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      padding: 32px;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      box-shadow: 0 20px 55px rgba(15, 23, 42, .12);
+    }
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0 0 6px; font-size: clamp(24px, 5vw, 30px); }
+    h2 { margin: 0 0 24px; color: var(--muted); font-size: 15px; font-weight: 500; }
+    label { display: block; margin: 16px 0 7px; font-size: 14px; font-weight: 650; }
+    input {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, .15); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    button {
+      width: 100%;
+      min-height: 48px;
+      margin-top: 24px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--primary);
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s, transform .15s;
+    }
+    button:hover { background: var(--primary-hover); }
+    button:active { transform: translateY(1px); }
+    .notice {
+      margin: 18px 0 0;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fff7ed;
+      color: #9a3412;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .message { margin-top: 14px; font-size: 14px; line-height: 1.5; }
+    .message.error { color: var(--danger); }
+    .message.success { color: #166534; }
+    .secure-note { margin: 14px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+    @media (max-width: 420px) {
+      .payment-container { padding: 24px 20px; }
+      .row { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="payment-container">
+    <span class="eyebrow">Premium access</span>
+    <h1>Complete Your Payment</h1>
+    <h2>One-time payment</h2>
+
+    <form id="payment-form">
+      <label for="name">Full name</label>
+      <input id="name" name="name" autocomplete="name" required maxlength="100"
+             placeholder="Enter your full name">
+
+      <label for="amount">Amount (USD)</label>
+      <input id="amount" name="amount" type="number" min="1" max="100000" step="0.01"
+             inputmode="decimal" required placeholder="25.00">
+
+      <label for="card-number">Card number</label>
+      <input id="card-number" name="card-number" inputmode="numeric" autocomplete="cc-number"
+             maxlength="23" placeholder="1234 5678 9012 3456" required>
+
+      <div class="row">
+        <div>
+          <label for="expiry">Expiry date</label>
+          <input id="expiry" name="expiry" inputmode="numeric" autocomplete="cc-exp"
+                 maxlength="5" placeholder="MM/YY" required>
+        </div>
+        <div>
+          <label for="cvv">Security code</label>
+          <input id="cvv" name="cvv" type="password" inputmode="numeric" autocomplete="cc-csc"
+                 maxlength="4" placeholder="CVV" required>
+        </div>
+      </div>
+
+      <button type="submit">Continue to Payment</button>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+    </form>
+
+    <p class="notice">
+      Demo form only: this page does not charge a card or send payment details anywhere.
+      For real payments, use a trusted payment provider's hosted checkout. Do not collect
+      or store card details directly in this static page.
+    </p>
+    <p class="secure-note">Your payment integration is not configured yet.</p>
+  </main>
+
+  <script>
+    const form = document.getElementById('payment-form');
+    const cardNumber = document.getElementById('card-number');
+    const expiry = document.getElementById('expiry');
+    const cvv = document.getElementById('cvv');
+    const message = document.getElementById('message');
+
+    // Format the card number for display only; it is never submitted or stored.
+    cardNumber.addEventListener('input', () => {
+      const digits = cardNumber.value.replace(/\D/g, '').slice(0, 19);
+      cardNumber.value = digits.replace(/(.{4})/g, '$1 ').trim();
+    });
+
+    expiry.addEventListener('input', () => {
+      const digits = expiry.value.replace(/\D/g, '').slice(0, 4);
+      expiry.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+    });
+
+    cvv.addEventListener('input', () => {
+      cvv.value = cvv.value.replace(/\D/g, '').slice(0, 4);
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      message.className = 'message';
+      message.textContent = '';
+
+      const name = document.getElementById('name').value.trim();
+      const amount = Number(document.getElementById('amount').value);
+      const cardDigits = cardNumber.value.replace(/\D/g, '');
+      const expiryMatch = expiry.value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+      const securityCode = cvv.value;
+
+      if (!name) {
+        showError('Please enter your full name.');
+        return;
+      }
+      if (!Number.isFinite(amount) || amount < 1) {
+        showError('Please enter a valid amount of at least $1.00.');
+        return;
+      }
+      if (cardDigits.length < 13 || cardDigits.length > 19) {
+        showError('Please enter a valid card number.');
+        return;
+      }
+      if (!expiryMatch) {
+        showError('Enter the expiry date in MM/YY format.');
+        return;
+      }
+
+      const month = Number(expiryMatch[1]);
+      const year = 2000 + Number(expiryMatch[2]);
+      const now = new Date();
+      if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) {
+        showError('This card appears to be expired.');
+        return;
+      }
+      if (!/^\d{3,4}$/.test(securityCode)) {
+        showError('Enter a 3- or 4-digit security code.');
+        return;
+      }
+
+      // Intentionally do not send, log, or store card details.
+      message.className = 'message success';
+      message.textContent =
+        'The form is valid, but no payment was taken. Connect a payment provider hosted checkout to accept real payments.';
+      form.reset();
+    });
+
+    function showError(text) {
+      message.className = 'message error';
+      message.textContent = text;
+    }
+  </script>
+</body>
+</html>
